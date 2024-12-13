@@ -53,7 +53,7 @@ import (
 const (
 	obfs4proxyVersion = "0.0.15-dev"
 	obfs4proxyLogFile = "obfs4proxy.log"
-	socksAddr         = "127.0.0.1:0"
+	socksAddr         = "0.0.0.0:10080"
 )
 
 var (
@@ -128,6 +128,8 @@ func clientHandler(f base.ClientFactory, conn net.Conn, proxyURI *url.URL) {
 	defer termMon.onHandlerFinish()
 
 	name := f.Transport().Name()
+	clientAddrStr := log.ElideAddr(conn.RemoteAddr().String())
+	log.Infof("%s(%s) - new connection", name, clientAddrStr)
 
 	// Read the client's SOCKS handshake.
 	socksReq, err := socks5.Handshake(conn)

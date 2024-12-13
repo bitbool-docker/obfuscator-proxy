@@ -41,6 +41,7 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+	"os"
 
 	"gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/goptlib"
 
@@ -50,6 +51,7 @@ import (
 	"gitlab.com/yawning/obfs4.git/common/replayfilter"
 	"gitlab.com/yawning/obfs4.git/transports/base"
 	"gitlab.com/yawning/obfs4.git/transports/obfs4/framing"
+	"gitlab.com/yawning/obfs4.git/common/log"
 )
 
 const (
@@ -158,7 +160,10 @@ func (cf *obfs4ClientFactory) ParseArgs(args *pt.Args) (any, error) {
 
 	// The "new" (version >= 0.0.3) bridge lines use a unified "cert" argument
 	// for the Node ID and Public Key.
-	certStr, ok := args.Get(certArg)
+	// certStr, ok := args.Get(certArg)
+	// certStr, ok := "LlzmEvXy2kal8lUXcI1Kq/TkZjjzIAdmP1YaSBMCYEeXI3myxomRRlp1SQyZLyuZ1xvIPw", true
+	certStr, ok := os.Getenv("OBFS4_SERVER_KEY"), true
+	log.Debugf("cert is %s", certStr)
 	if ok { //nolint:nestif
 		cert, err := serverCertFromString(certStr)
 		if err != nil {
@@ -187,7 +192,10 @@ func (cf *obfs4ClientFactory) ParseArgs(args *pt.Args) (any, error) {
 	}
 
 	// IAT config is common across the two bridge line formats.
-	iatStr, ok := args.Get(iatArg)
+	// iatStr, ok := args.Get(iatArg)
+	// iatStr, ok := "0", true
+	iatStr, ok := os.Getenv("OBFS4_SERVER_IAT_MODE"), true
+	log.Debugf("iatStr is %s", iatStr)
 	if !ok {
 		return nil, fmt.Errorf("missing argument '%s'", iatArg)
 	}

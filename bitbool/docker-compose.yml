@@ -1,0 +1,24 @@
+name: obfs
+
+services:
+  server:
+    image: bitbool/obfs4proxy:1.0
+    ports:
+      - 12345:12345
+    environment:
+      - TOR_PT_SERVER_TRANSPORTS=obfs4
+      - TOR_PT_ORPORT=$TARGET_SERVICE:$TARGET_PORT
+    volumes:
+      - ./var/server/:/var/lib/tor/pt_state/obfs4
+
+
+  client:
+    image: bitbool/obfs4proxy:1.0
+    ports:
+      - 10080:10080
+    environment:
+      - OBFS4_LOG_LEVEL=DEBUG
+      - TOR_PT_CLIENT_TRANSPORTS=obfs4
+      - OBFS4_SERVER_KEY=$OBFS4_SERVER_CERTIFICATE #no ""
+    volumes:
+      - ./var/client/:/var/lib/tor/pt_state/obfs4      
